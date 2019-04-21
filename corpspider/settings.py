@@ -64,9 +64,12 @@ ROBOTSTXT_OBEY = True
 
 # Configure item pipelines
 # See https://doc.scrapy.org/en/latest/topics/item-pipeline.html
-#ITEM_PIPELINES = {
-#    'corpspider.pipelines.CorpspiderPipeline': 300,
-#}
+ITEM_PIPELINES = {
+   'corpspider.pipelines.CorpspiderPipeline': 2,
+}
+
+MONGO_URI = 'mongodb://localhost:27017'
+MONGO_DB = "corps"
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://doc.scrapy.org/en/latest/topics/autothrottle.html

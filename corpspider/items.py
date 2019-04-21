@@ -7,8 +7,13 @@
 
 import scrapy
 
-
 class CorpspiderItem(scrapy.Item):
     # define the fields for your item here like:
     # name = scrapy.Field()
+    no = scrapy.Field()
+    name = scrapy.Field()
+    legal_person = scrapy.Field()
+    corp_type = scrapy.Field()
+    area = scrapy.Field()
+    address = scrapy.Field()
     pass
