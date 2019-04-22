@@ -29,14 +29,22 @@ class CorpspiderPipeline(object):
         self.client.close()
 
     def process_item(self, item, spider):
-        print "pipeline......"
-        old = self.db[self.collection_name].find_one({ "no": item['no'] })
-        print "find result"
-        print old
-        if old:
-          print 'update...'
-          self.db[self.collection_name].update_one({'_id': old['_id'] }, dict(item))
-        else:
-          print 'insert....'
-          self.db[self.collection_name].insert(dict(item))
+        if isinstance(item, list):
+          for i in item:
+            self.process_item(item, spider)
+          return
+        if item['tp'] == 'corp':
+            old = self.db[self.collection_name].find_one({ "no": item['no'] })
+            if old:
+              print 'update corp...'
+              self.db[self.collection_name].update_one({'_id': old['_id'] }, dict(item))
+            else:
+              print 'insert corp....'
+              self.db[self.collection_name].insert(dict(item))
+        if item['tp'] == 'qualification':
+            old = self.db['qualifications'].find_one({ "no": item['no'], "name": item["name"] })
+            if old:
+              self.db['qualifications'].update_one({'_id': old['_id'] }, dict(item))
+            else:
+              self.db['qualifications'].insert(dict(item))
         return item
