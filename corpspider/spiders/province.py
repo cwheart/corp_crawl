@@ -12,6 +12,12 @@ class ProvinceSpider(scrapy.Spider):
     i = 0
     j = 0
     total = ""
+    apt_codes = [
+        'D101A',
+        'D101T',
+        'D110A',
+        'D110T'
+    ]
     apt_scopes = [
         '建筑工程施工总承包一级',
         '建筑工程施工总承包特级',
@@ -92,12 +98,13 @@ class ProvinceSpider(scrapy.Spider):
         area = self.areas[self.i]
         code = self.codes[self.i]
         apt_scope = self.apt_scopes[self.j]
+        apt_code = self.apt_codes[self.j]
         print area + " " + apt_scope + " " + code
 
         request = scrapy.FormRequest(
             url = self.url,
             formdata = {
-                "apt_code": "D101A",
+                "apt_code": apt_code,
                 "apt_scope": apt_scope,
                 "qy_reg_addr": area,
                 "qy_region": code,
