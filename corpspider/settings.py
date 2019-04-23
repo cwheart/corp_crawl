@@ -80,6 +80,9 @@ ITEM_PIPELINES = {
 MONGO_URI = 'mongodb://localhost:27017'
 MONGO_DB = "corps"
 
+LOG_FILE = "mySpider.log"
+LOG_STDOUT = True
+
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://doc.scrapy.org/en/latest/topics/autothrottle.html
 #AUTOTHROTTLE_ENABLED = True
