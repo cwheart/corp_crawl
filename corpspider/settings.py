@@ -33,7 +33,7 @@ ROBOTSTXT_OBEY = False
 #CONCURRENT_REQUESTS_PER_IP = 16
 
 # Disable cookies (enabled by default)
-COOKIES_ENABLED = True
+COOKIES_ENABLED = False
 RETRY_ENABLED = False
 
 # Disable Telnet Console (enabled by default)
@@ -46,7 +46,8 @@ DEFAULT_REQUEST_HEADERS = {
   'Accept-Encoding': 'gzip, deflate, br',
   'Cache-Control': 'max-age=0',
   # 'Connection': 'keep-alive',
-  'Upgrade-Insecure-Requests': 1
+  'Upgrade-Insecure-Requests': 1,
+  'Referer': 'https://www.baidu.com/'
 }
 
 # Enable or disable spider middlewares
