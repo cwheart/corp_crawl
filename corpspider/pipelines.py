@@ -37,14 +37,14 @@ class CorpspiderPipeline(object):
             old = self.db[self.collection_name].find_one({ "no": item['no'] })
             if old:
               print 'update corp...'
-              self.db[self.collection_name].update_one({'_id': old['_id'] }, dict(item))
+              self.db[self.collection_name].update_one({'_id': old['_id'] }, {'$set': dict(item)})
             else:
               print 'insert corp....'
               self.db[self.collection_name].insert(dict(item))
         if item['tp'] == 'qualification':
             old = self.db['qualifications'].find_one({ "no": item['no'], "name": item["name"] })
             if old:
-              self.db['qualifications'].update_one({'_id': old['_id'] }, dict(item))
+              self.db['qualifications'].update_one({'_id': old['_id'] }, {'$set': dict(item)})
             else:
               self.db['qualifications'].insert(dict(item))
         return item

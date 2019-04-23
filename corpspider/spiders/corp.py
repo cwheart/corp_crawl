@@ -133,8 +133,10 @@ class CorpSpider(scrapy.Spider):
         print "pg: %s" % pg
         print "pc: %s" % pc
         print page_text
-        if pg > pc:
+        if pg > pc or pg > 30:
             self.j += 1
+            pg = 1
+            self.total = ""
         if self.j > len(self.areas):
             self.i += 1
             self.j = 0

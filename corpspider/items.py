@@ -17,6 +17,10 @@ class CorpspiderItem(scrapy.Item):
     corp_type = scrapy.Field()
     area = scrapy.Field()
     address = scrapy.Field()
+    email = scrapy.Field()
+    phone = scrapy.Field()
+    register_amount = scrapy.Field()
+    created_at = scrapy.Field()
     pass
 
 class QualificationItem(scrapy.Item):
