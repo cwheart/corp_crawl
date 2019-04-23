@@ -8,39 +8,30 @@ import random
 
 class ChachaSpider(scrapy.Spider):
     name = 'chacha'
-    # allowed_domains = ['www.qichacha.com']
+    allowed_domains = ['www.qichacha.com']
     start_urls = [
-        'https://www.qichacha.com/search?key=91110000625906144E'
+        'https://www.qichacha.com'
     ]
-    agent = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.103 Safari/537.36'
+    items = []
+    skip = 0
+
+    def get_item(self):
+        if len(self.items) <= 0:
+            for item in db['corps'].find({ 'email': None }).skip(self.skip).limit(10):
+                self.items.append(item)
+            self.skip += 10
+        return self.items.pop()
 
     def start_requests(self):
-        count = db['corps'].count({})
-        skip = 0
-        step = 10
-        url = ''
-        while skip < count:
-            items = db['corps'].find({ 'email': None }).limit(step).skip(skip)
-            skip += step
-            for item in items:
-                rd = random.randint(3, 20)
-                print "sleep... %s" % rd
-                time.sleep(rd)
-                url = 'https://www.qichacha.com/search?key=' + item['no']
-                print url
-                yield scrapy.Request(url, callback=self.parse, headers={ 'Referer': 'https://www.baidu.com/' })
-    def parseSearch(self, response):
-        url = response.xpath('//div[@id="content_left"]/div[@id="1"]/div/a[@class="m"]/@href').extract_first()
-        if url:
-            yield scrapy.Request(url, callback=self.parse)
-        else:
-            print 'skip...'
+        item = self.get_item()
+        url = 'https://www.qichacha.com/search?key=' + item['no']
+        yield scrapy.Request(url, callback=self.parse, meta={ 'no': item['no'], 'name': item['name'], '_id': item['_id'] })
+
+
     def parse(self, response):
         print "parse......"
+        corp_id = response.meta['_id']
         item = CorpspiderItem()
-        item['tp'] = 'corp'
-        no = response.xpath('//em/text()').extract_first()
-        item['no'] = no.strip()
 
         titles = response.xpath('//span[@class="m-l"]/text()').extract()
         for title in titles:
@@ -54,4 +45,12 @@ class ChachaSpider(scrapy.Spider):
         for title in titles:
             if(title.find(u'邮箱：') >= 0):
                 item['email'] = re.findall(u'邮箱：(.*)', title)[0]
-        return item
+        db['corps'].update_one({'_id': corp_id }, {'$set': dict(item)})
+        rd = random.randint(3, 20)
+        time.sleep(rd)
+        corp = self.get_item()
+        url = 'https://www.qichacha.com/search?key=' + corp['no']
+        yield scrapy.Request(url, callback=self.parse, meta={ 'no': corp['no'], 'name': corp['name'], '_id': corp['_id'] })
+
+
+

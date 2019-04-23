@@ -9,44 +9,30 @@ class ChachaSpider(scrapy.Spider):
     name = 'tianyan'
     # allowed_domains = ['www.qichacha.com']
     start_urls = [
-        'https://www.qichacha.com/search?key=91110000625906144E'
+        'https://www.tianyancha.com'
     ]
-    agent = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_8_0) AppleWebKit/536.3 (KHTML, like Gecko) Chrome/19.0.1063.0 Safari/536.3'
+    items = []
+    skip = 0
+
+    def get_item(self):
+        if len(self.items) <= 0:
+            for item in db['corps'].find({ 'email': None }).skip(self.skip).limit(10):
+                self.items.append(item)
+            self.skip += 10
+        self.items.pop()
 
     def start_requests(self):
-        count = count = 20 # db['corps'].find({}).count()
-        skip = 0
-        step = 10
-        while skip < count:
-            items = db['corps'].find({ 'email': None }).limit(step).skip(skip)
-            skip += step
-            for item in items:
-                url = 'https://www.baidu.com/s?wd=site%3Atianyancha.com%20' + item['no'] + '%20' + item['name'] + u'_工商信息'
-                yield scrapy.Request(url, callback=self.parseSearch, headers={ "USER_AGENT": self.agent })
-                time.sleep(4)
-    def parseSearch(self, response):
-        links = response.xpath('//div[@class="result c-container "]')
-        i = 0
-        for link in links:
-            i += 1
-            text = link.xpath('.//h3/a/em/text()').extract_first()
-            url = link.xpath('.//h3/a/@href').extract_first() # 链接页面
-            # url = link.xpath('.//div[@class="f13"]//a[@class="m"]/@href').extract_first() # 百度快照页面
-            if text and text.find(u"_工商信息") >= 0:
-                yield scrapy.Request(url, callback=self.parse, headers={ "USER_AGENT": self.agent })
-                return
-            else:
-                print 'skip...'
-        print 'not found...'
+        item = self.get_item()
+        url = 'https://www.tianyancha.com/search?key=' + item['no']
+        yield scrapy.Request(url, callback=self.parseSearch, meta={ 'no': item['no'], 'name': item['name'], '_id': item['_id'] })
+
     def parse(self, response):
         print "parse......"
         amount = response.xpath('//td[@width="308px"]/div/@title').extract_first()
         item = CorpspiderItem()
-        item['tp'] = 'corp'
+        corp_id = response.meta['_id']
         item['register_amount'] = amount.strip()
-
-        titles = response.xpath('//table[@class="table -striped-col -border-top-none -breakall"]/tbody/tr/td/text()').extract()
-        item['no'] = titles[7]
+        db['corps'].update_one({'_id': corp_id }, {'$set': dict(item)})
 
         titles = response.xpath('//div[@class="detail "]/div/span[@class="link-hover-click"]/text()').extract()
         for title in titles:
