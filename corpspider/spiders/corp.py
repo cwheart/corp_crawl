@@ -10,9 +10,16 @@ class CorpSpider(scrapy.Spider):
     name = 'corp'
     # allowed_domains = ['jzsc.mohurd.gov.cn']
     start_urls = ['http://jzsc.mohurd.gov.cn/dataservice/query/comp/list']
+    url = 'http://jzsc.mohurd.gov.cn/dataservice/query/comp/list'
     i = 0
     j = 0
     total = ""
+    apt_codes = [
+        'D101A',
+        'D101T',
+        'D110A',
+        'D110T'
+    ]
     apt_scopes = [
         '建筑工程施工总承包一级',
         '建筑工程施工总承包特级',
@@ -90,16 +97,16 @@ class CorpSpider(scrapy.Spider):
         yield self.request_page('1')
 
     def request_page(self, page):
-        apt_scope = self.apt_scopes[self.i]
-        area = self.areas[self.j]
-        code = self.codes[self.j]
-        print area + " " + apt_scope
-        url = 'http://jzsc.mohurd.gov.cn/dataservice/query/comp/list'
+        area = self.areas[self.i]
+        code = self.codes[self.i]
+        apt_scope = self.apt_scopes[self.j]
+        apt_code = self.apt_codes[self.j]
+        print "area: " + area + " scope: " + apt_scope + " page: " + page
 
         request = scrapy.FormRequest(
-            url = url,
+            url = self.url,
             formdata = {
-                "apt_code": "D101A",
+                "apt_code": apt_code,
                 "apt_scope": apt_scope,
                 "qy_reg_addr": area,
                 "qy_region": code,
@@ -118,10 +125,10 @@ class CorpSpider(scrapy.Spider):
             path = line.xpath('.//td[@class="text-left primary"]/a/@href').extract_first()
             no = line.xpath('.//td[@class="text-left complist-num"]/text()').extract_first().strip()
             corp_id = path.split("/")[-1]
-            count = db['corps'].count({'no': no.strip()})
-            if count > 0:
-                time.sleep(1)
-                continue
+            # count = db['corps'].count({'no': no.strip()})
+            # if count > 0:
+            #     time.sleep(1)
+            #     continue
 
             url = response.urljoin(path)
             time.sleep(5)
@@ -134,21 +141,16 @@ class CorpSpider(scrapy.Spider):
         pg = re.findall(r'\(\{pg\:(\d+)', page_text)[0]
         pc = re.findall(r'pc\:(\d+)', page_text)[0]
         self.total = re.findall(r'tt\:(\d+)', page_text)[0]
-
         pg = int(pg) + 1
         pc = int(pc)
-
-        print "pg: %s" % pg
-        print "pc: %s" % pc
         print page_text
         if pg > pc or pg > 30:
             self.j += 1
             pg = 1
             self.total = ""
-        if self.j > len(self.areas):
+        if self.j >= len(self.apt_scopes):
             self.i += 1
             self.j = 0
-        print pg
         yield self.request_page("%s" % pg)
 
     def parse_detail(self, response):

@@ -134,6 +134,6 @@ class ProvinceSpider(scrapy.Spider):
         if self.j >= len(self.apt_scopes):
             self.j = 0
             self.i += 1
-        time.sleep(3)
+        time.sleep(10)
         yield self.request_page()
        
