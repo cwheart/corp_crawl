@@ -4,6 +4,7 @@ import re
 import time
 from ..items import CorpspiderItem
 from ..items import QualificationItem
+from ..mongo import db
 
 class CorpSpider(scrapy.Spider):
     name = 'corp'
@@ -112,16 +113,23 @@ class CorpSpider(scrapy.Spider):
         return request
 
     def parse(self, response):
-        urls = response.xpath('//td[@class="text-left primary"]/a/@href').extract()
-        for path in urls:
+        lines = response.xpath('//tbody[@class="cursorDefault"]/tr')
+        for line in lines:
+            path = line.xpath('.//td[@class="text-left primary"]/a/@href').extract_first()
+            no = line.xpath('.//td[@class="text-left complist-num"]/text()').extract_first().strip()
+            corp_id = path.split("/")[-1]
+            count = db['corps'].count({'no': no.strip()})
+            if count > 0:
+                time.sleep(1)
+                continue
+
             url = response.urljoin(path)
             time.sleep(5)
             yield scrapy.Request(url, callback=self.parse_detail)
             time.sleep(1)
-            no = path.split("/")[-1]
-            qualification_url = "http://jzsc.mohurd.gov.cn/dataservice/query/comp/caDetailList/" + no
+            qualification_url = "http://jzsc.mohurd.gov.cn/dataservice/query/comp/caDetailList/" + corp_id
             print qualification_url
-            yield scrapy.Request(qualification_url, callback=self.parse_qualification)
+            yield scrapy.Request(qualification_url, callback=self.parse_qualification, meta={ 'no': no })
         page_text = response.css('a[sf=pagebar]').attrib['sf:data']
         pg = re.findall(r'\(\{pg\:(\d+)', page_text)[0]
         pc = re.findall(r'pc\:(\d+)', page_text)[0]
@@ -148,7 +156,7 @@ class CorpSpider(scrapy.Spider):
         item = CorpspiderItem()
         item['tp'] = 'corp'
         item['name'] = response.xpath('//div[@class="user_info spmtop"]/b/text()').extract_first().strip()
-        item['no'] = items[0].strip()
+        item['no'] = items[0].strip().split('/')[-1].strip()
         item['legal_person'] = items[1].strip()
         item['corp_type'] = items[2].strip()
         item['area'] = items[3].strip()
@@ -157,11 +165,12 @@ class CorpSpider(scrapy.Spider):
 
     def parse_qualification(self, response):
         result = []
+        no = response.meta['no']
         lines = response.xpath('//tr[@class="row"]')
         for line in lines:
             item = QualificationItem()
             item['tp'] = 'qualification'
-            item['corp_no'] = response.xpath('//td[@class="view"]/a/@data-qyid').extract_first()
+            item['corp_no'] = no
             items = line.xpath('.//td/text()').extract()
             item['qua_type'] = items[1].strip()
             item['no'] = items[2].strip()

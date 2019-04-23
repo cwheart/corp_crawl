@@ -19,10 +19,10 @@ NEWSPIDER_MODULE = 'corpspider.spiders'
 USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_8_0) AppleWebKit/536.3 (KHTML, like Gecko) Chrome/19.0.1063.0 Safari/536.3'
 
 # Obey robots.txt rules
-ROBOTSTXT_OBEY = False
+ROBOTSTXT_OBEY = True
 
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
-CONCURRENT_REQUESTS = 5
+# CONCURRENT_REQUESTS = 5
 
 # Configure a delay for requests for the same website (default: 0)
 # See https://doc.scrapy.org/en/latest/topics/settings.html#download-delay
@@ -44,7 +44,7 @@ DEFAULT_REQUEST_HEADERS = {
   'Accept-Language': 'zh-CN,zh;q=0.9,en;q=0.8',
   'Accept-Encoding': 'gzip, deflate, br',
   'Cache-Control': 'max-age=0',
-  'Connection': 'keep-alive',
+  # 'Connection': 'keep-alive',
   'Upgrade-Insecure-Requests': 1
 }
 

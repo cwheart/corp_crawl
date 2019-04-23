@@ -15,7 +15,7 @@ class ChachaSpider(scrapy.Spider):
     agent = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.103 Safari/537.36'
 
     def start_requests(self):
-        count = db['corps'].find({}).count()
+        count = db['corps'].count({})
         skip = 0
         step = 10
         url = ''
