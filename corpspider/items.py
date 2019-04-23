@@ -33,3 +33,11 @@ class QualificationItem(scrapy.Item):
     expired_at = scrapy.Field() # 证书有效期
     published_org = scrapy.Field() # 发证机关
     pass
+
+class ProvinceItem(scrapy.Item):
+    tp = scrapy.Field() # 数据类型
+    apt_scope = scrapy.Field()
+    area = scrapy.Field()
+    code = scrapy.Field()
+    total = scrapy.Field()
+    pass

@@ -19,9 +19,9 @@ NEWSPIDER_MODULE = 'corpspider.spiders'
 USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_8_0) AppleWebKit/536.3 (KHTML, like Gecko) Chrome/19.0.1063.0 Safari/536.3'
 
 # Obey robots.txt rules
-ROBOTSTXT_OBEY = True
+ROBOTSTXT_OBEY = False
 
-# Configure maximum concurrent requests performed by Scrapy (default: 16)
+# Configure maximum concurrent requests DOWMLOAD_DELY by Scrapy (default: 16)
 # CONCURRENT_REQUESTS = 5
 
 # Configure a delay for requests for the same website (default: 0)

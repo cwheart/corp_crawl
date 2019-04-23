@@ -47,4 +47,10 @@ class CorpspiderPipeline(object):
               self.db['qualifications'].update_one({'_id': old['_id'] }, {'$set': dict(item)})
             else:
               self.db['qualifications'].insert(dict(item))
+        if item['tp'] == 'province':
+            old = self.db['provinces'].find_one({ "code": item['code'], "apt_scope": item["apt_scope"] })
+            if old:
+              self.db['provinces'].update_one({'_id': old['_id'] }, {'$set': dict(item)})
+            else:
+              self.db['provinces'].insert(dict(item))
         return item
