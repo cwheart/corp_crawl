@@ -45,6 +45,7 @@ class ChachaSpider(scrapy.Spider):
         for title in titles:
             if(title.find(u'邮箱：') >= 0):
                 item['email'] = re.findall(u'邮箱：(.*)', title)[0]
+        print(dict(item))
         db['corps'].update_one({'_id': corp_id }, {'$set': dict(item)})
         rd = random.randint(3, 20)
         time.sleep(rd)
