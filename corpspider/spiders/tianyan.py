@@ -6,7 +6,8 @@ from ..mongo import db
 from ..items import CorpspiderItem
 import random
 from ..holder import Holder, HolderItem
-from ..corp_info import CorpInfo, InfoItem, BidItem
+from ..corp_info import CorpInfo, InfoItem
+from ..bid_item import BidItem
 
 class ChachaSpider(scrapy.Spider):
     name = 'tianyan'
@@ -45,7 +46,8 @@ class ChachaSpider(scrapy.Spider):
             url,
             callback=self.parse_list,
             dont_filter=True,
-            meta={ 'no': corp['no'], 'name': corp['name'], '_id': corp['_id'] }
+            meta={ 'no': corp['no'], 'name': corp['name'], '_id': corp['_id'] },
+            headers={'Referer': 'https://www.baidu.com/'}
         )
     def parse_list(self, response):
         no = response.meta['no']
@@ -62,7 +64,8 @@ class ChachaSpider(scrapy.Spider):
         return scrapy.Request(
             url,
             callback=self.parse,
-            meta={ 'no': no, '_id': corp_id }
+            meta={ 'no': no, '_id': corp_id },
+            headers={'Referer': 'https://www.baidu.com/'}
         )
 
     def parse(self, response):
