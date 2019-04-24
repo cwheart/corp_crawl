@@ -47,7 +47,7 @@ DEFAULT_REQUEST_HEADERS = {
   'Cache-Control': 'max-age=0',
   # 'Connection': 'keep-alive',
   'Upgrade-Insecure-Requests': 1,
-  'Referer': 'https://www.baidu.com/'
+  # 'Referer': 'https://www.baidu.com/'
 }
 
 # Enable or disable spider middlewares
@@ -82,7 +82,7 @@ MONGO_DB = "corps"
 
 LOG_FILE = "mySpider.log"
 LOG_STDOUT = True
-LOG_LEVEL = "INFO"
+# LOG_LEVEL = "INFO"
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://doc.scrapy.org/en/latest/topics/autothrottle.html

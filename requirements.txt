@@ -1,3 +1,4 @@
 scrapy
 pymongo
 scrapy-random-useragent
+mongoengine
