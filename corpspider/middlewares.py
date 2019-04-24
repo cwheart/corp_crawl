@@ -6,7 +6,8 @@
 # https://doc.scrapy.org/en/latest/topics/spider-middleware.html
 
 from scrapy import signals
-
+import base64
+import requests
 
 class CorpspiderSpiderMiddleware(object):
     # Not all methods need to be defined. If a method is not defined,
@@ -101,3 +102,11 @@ class CorpspiderDownloaderMiddleware(object):
 
     def spider_opened(self, spider):
         spider.logger.info('Spider opened: %s' % spider.name)
+
+class ProxyMiddleware(object):
+    # overwrite process request
+    def process_request(self, request, spider):
+        # Set the location of the proxy
+        url = requests.get('http://dps.kdlapi.com/api/getdps/?orderid=995609298222197&num=1&pt=1&sep=1').text
+        request.meta['proxy'] = "http://" + url
+        pass
