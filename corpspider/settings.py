@@ -22,7 +22,7 @@ USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_8_0) AppleWebKit/536.3 (
 ROBOTSTXT_OBEY = False
 
 # Configure maximum concurrent requests DOWMLOAD_DELY by Scrapy (default: 16)
-# CONCURRENT_REQUESTS = 5
+CONCURRENT_REQUESTS = 5
 
 # Configure a delay for requests for the same website (default: 0)
 # See https://doc.scrapy.org/en/latest/topics/settings.html#download-delay

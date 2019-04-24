@@ -136,9 +136,9 @@ class CorpSpider(scrapy.Spider):
             #     continue
 
             url = response.urljoin(path)
-            time.sleep(5)
+            time.sleep(10)
             yield scrapy.Request(url, callback=self.parse_detail)
-            time.sleep(1)
+            time.sleep(2)
             qualification_url = "http://jzsc.mohurd.gov.cn/dataservice/query/comp/caDetailList/" + corp_id
             print qualification_url
             yield scrapy.Request(qualification_url, callback=self.parse_qualification, meta={ 'no': no })
