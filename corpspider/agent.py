@@ -1,6 +1,6 @@
 from mongoengine import *
 connect('corps')
-from datetime import datetime, timedelta
+from datetime import datetime
 
 class Agent(Document):
     host = StringField(required=True)

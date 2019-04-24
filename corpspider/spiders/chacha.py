@@ -23,15 +23,12 @@ class ChachaSpider(scrapy.Spider):
         return self.items.pop()
 
     def start_requests(self):
-        yield self.request_page()
-    def request_list(self):
-        return scrapy.Request('https://www.qichacha.com', callback=self.parse_list, dont_filter=True)
-    def parse_list(self, response):
-        print '=====>>>>'
-        yield self.request_page()
-
-    def request_page(self):
-        corp = self.get_item()
+        while item = get_item():
+            yield self.request_page(item)
+            rd = random.randint(3, 20)
+            print 'sleep.... %s' % rd
+            time.sleep(rd)
+    def request_page(self, corp):
         url = 'https://www.qichacha.com/search?key=' + corp['no']
         return scrapy.Request(
             url,
@@ -60,9 +57,5 @@ class ChachaSpider(scrapy.Spider):
         item['no'] = response.meta['no']
         print(dict(item))
         db['corps'].update_one({'_id': corp_id }, {'$set': dict(item)})
-        rd = random.randint(3, 20)
-        print 'sleep.... %s' % rd
-        time.sleep(rd)
-        yield self.request_page()        
 
 
