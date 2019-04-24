@@ -113,7 +113,7 @@ class ProxyMiddleware(object):
         # Set the location of the proxy
         timeago = datetime.now() - timedelta(minutes=30)
         count = Agent.objects(created_at__gt=timeago).count()
-        while count < 3:
+        while count < 30:
             count += 1
             agent = Agent(host=requests.get(url).text)
             agent.save()

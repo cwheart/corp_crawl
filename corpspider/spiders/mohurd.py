@@ -121,9 +121,12 @@ class MohurdSpider(scrapy.Spider):
         return request
 
     def parse(self, response):
+        i = response.meta['i']
+        j = response.meta['j']
         lines = response.xpath('//tbody[@class="cursorDefault"]/tr')
         for line in lines:
             path = line.xpath('.//td[@class="text-left primary"]/a/@href').extract_first()
+            url = response.urljoin(path)
             no = line.xpath('.//td[@class="text-left complist-num"]/text()').extract_first()
             if no:
                 no = no.strip()
@@ -135,7 +138,6 @@ class MohurdSpider(scrapy.Spider):
             #     time.sleep(1)
             #     continue
 
-            url = response.urljoin(path)
             time.sleep(10)
             yield scrapy.Request(url, callback=self.parse_detail)
             time.sleep(2)
@@ -149,8 +151,6 @@ class MohurdSpider(scrapy.Spider):
         pg = int(pg) + 1
         pc = int(pc)
         print page_text
-        i = response.meta['i']
-        j = response.meta['j']
         if pg > pc or pg > 30:
             j += 1
             pg = 1

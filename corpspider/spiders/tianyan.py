@@ -6,7 +6,7 @@ from ..mongo import db
 from ..items import CorpspiderItem
 import random
 from ..holder import Holder, HolderItem
-from ..corp_info import CorpInfo, InfoItem
+from ..corp_info import CorpInfo, InfoItem, BidItem
 
 class ChachaSpider(scrapy.Spider):
     name = 'tianyan'
@@ -19,15 +19,27 @@ class ChachaSpider(scrapy.Spider):
 
     def get_item(self):
         if len(self.items) <= 0:
-            for item in db['corps'].find({ 'email': None }).skip(self.skip).limit(10):
+            for item in db['corps'].find({ 'holder': None }).skip(self.skip).limit(10):
                 self.items.append(item)
             self.skip += 10
-        return self.items.pop()
+        if len(self.items) > 0:
+            return self.items.pop()
+        elif skip == 0:
+            return None
+        else:
+            self.skip = 0
+            return self.get_item()
+
 
     def start_requests(self):
-        yield self.request_list()
-    def request_list(self):
-        corp = self.get_item()
+        item = self.get_item()
+        while item:
+            yield self.request_list(item)
+            rd = random.randint(3, 20)
+            print 'sleep.... %s' % rd
+            time.sleep(rd)
+            item = self.get_item()
+    def request_list(self, corp):
         url = 'https://www.tianyancha.com/search?key=' + corp['no']
         return scrapy.Request(
             url,
@@ -44,14 +56,9 @@ class ChachaSpider(scrapy.Spider):
             yield self.request_page(url, no, corp_id)
         else:
             print 'there is no link' + no
-        rd = random.randint(3, 15)
-        print 'sleep.... %s' % rd
-        time.sleep(rd)
-        yield self.request_list()
 
     def request_page(self, url, no, corp_id):
-        print "url....."
-        print url
+        print "url....." + url
         return scrapy.Request(
             url,
             callback=self.parse,
@@ -62,8 +69,6 @@ class ChachaSpider(scrapy.Spider):
         print "parse......"
         corp_id = response.meta['_id']
         no = response.meta['no']
-
-
         # 股东信息
         holder = Holder.objects(corp_id=corp_id)
 
@@ -90,6 +95,8 @@ class ChachaSpider(scrapy.Spider):
             set__corp_no=no,
             set__hoder_count=hoder_count
         )
+        if len(items) > 0:
+            db['corps'].update_one({'_id': corp_id }, {'$set': dict({'holder': True})})
 
         info = CorpInfo.objects(corp_id=corp_id)
         lines = response.xpath('//div[@class="item-container"]')
@@ -111,6 +118,21 @@ class ChachaSpider(scrapy.Spider):
                     count = '0'
                 info_item = InfoItem(cate=title, name=name, count=count)
                 info_items.append(info_item)
+        # 招投标
+        lines = response.xpath('//div[@id="_container_bid"]/table/tbody/tr')
+        for line in lines:
+            arr = line.xpath('.//td/text()').extract()
+            published_at = arr[1]
+            title = arr[3]
+            customer = line.xpath('.//td/a/text()').extract_first()
+            bid_item = BidItem.objects(corp_id=corp_id, corp_no=no, title=title, published_at=published_at)
+            bid_item.modify(
+                upsert=True,
+                new=True,
+                set__customer=customer
+            )
+
+        info = CorpInfo.objects(corp_id=corp_id)
         info.modify(
             upsert=True,
             new=True,

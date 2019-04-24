@@ -22,20 +22,20 @@ class ChachaSpider(scrapy.Spider):
             self.skip += 10
         if len(self.items) > 0:
             return self.items.pop()
-        else if skip == 0:
-            self.skip = 0
+        elif skip == 0:
             return None
-        else
-            return get_item()
+        else:
+            self.skip = 0
+            return self.get_item()
 
     def start_requests(self):
-        item = get_item()
+        item = self.get_item()
         while item:
             yield self.request_page(item)
             rd = random.randint(3, 20)
             print 'sleep.... %s' % rd
             time.sleep(rd)
-            item = get_item()
+            item = self.get_item()
     def request_page(self, corp):
         url = 'https://www.qichacha.com/search?key=' + corp['no']
         return scrapy.Request(
@@ -54,14 +54,18 @@ class ChachaSpider(scrapy.Spider):
         for title in titles:
             if(title.find(u'注册资本：') >= 0):
                 item['register_amount'] = re.findall(u'注册资本：(.*)', title)[0]
-            if(title.find(u'成立时间：') >= 0):
+            elif(title.find(u'成立时间：') >= 0):
                 item['created_at'] = re.findall(u'成立时间：(.*)', title)[0]
-            if(title.find(u'电话：') >= 0):
+            elif(title.find(u'电话：') >= 0):
                 item['phone'] = re.findall(u'电话：(.*)', title)[0]
+            else:
+                print 'not found' + title
         titles = response.xpath('//p[@class="m-t-xs"]/text()').extract()
         for title in titles:
             if(title.find(u'邮箱：') >= 0):
                 item['email'] = re.findall(u'邮箱：(.*)', title)[0]
+            else:
+                print 'not found' + title
         item['no'] = response.meta['no']
         print(dict(item))
         db['corps'].update_one({'_id': corp_id }, {'$set': dict(item)})
