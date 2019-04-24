@@ -94,18 +94,18 @@ class CorpSpider(scrapy.Spider):
     ]
 
     def start_requests(self):
-        yield self.request_page('1')
+        yield self.request_page('1', 0, 0)
 
-    def request_page(self, page):
-        area = self.areas[self.i]
-        code = self.codes[self.i]
-        apt_scope = self.apt_scopes[self.j]
-        apt_code = self.apt_codes[self.j]
-        print "area: " + area + " scope: " + apt_scope + " page: " + page
+    def request_page(self, page, i, j):
+        area = self.areas[i]
+        code = self.codes[i]
+        apt_scope = self.apt_scopes[j]
+        apt_code = self.apt_codes[j]
+        print "area: " + code + " scope: " + apt_code + " page: " + page
 
         request = scrapy.FormRequest(
             url = self.url,
-            formdata = {
+            formdata={
                 "apt_code": apt_code,
                 "apt_scope": apt_scope,
                 "qy_reg_addr": area,
@@ -115,7 +115,8 @@ class CorpSpider(scrapy.Spider):
                 "$pgsz": "15",
                 "$pg": page
             },
-            callback = self.parse
+            callback=self.parse,
+            meta={'i': i, 'j': j}
         )
         return request
 
@@ -123,7 +124,11 @@ class CorpSpider(scrapy.Spider):
         lines = response.xpath('//tbody[@class="cursorDefault"]/tr')
         for line in lines:
             path = line.xpath('.//td[@class="text-left primary"]/a/@href').extract_first()
-            no = line.xpath('.//td[@class="text-left complist-num"]/text()').extract_first().strip()
+            no = line.xpath('.//td[@class="text-left complist-num"]/text()').extract_first()
+            if no:
+                no = no.strip()
+            else:
+                continue
             corp_id = path.split("/")[-1]
             # count = db['corps'].count({'no': no.strip()})
             # if count > 0:
@@ -144,14 +149,17 @@ class CorpSpider(scrapy.Spider):
         pg = int(pg) + 1
         pc = int(pc)
         print page_text
+        i = response.meta['i']
+        j = response.meta['j']
         if pg > pc or pg > 30:
-            self.j += 1
+            j += 1
             pg = 1
             self.total = ""
-        if self.j >= len(self.apt_scopes):
-            self.i += 1
-            self.j = 0
-        yield self.request_page("%s" % pg)
+        if j >= len(self.apt_scopes):
+            i += 1
+            j = 0
+        print "current" + " i: %s" % i + " j: %s" % j
+        yield self.request_page("%s" % pg, i, j)
 
     def parse_detail(self, response):
         items = response.xpath('//table[@class="pro_table_box datas_table"]/tbody/tr/td/text()').extract()

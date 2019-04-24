@@ -82,6 +82,7 @@ MONGO_DB = "corps"
 
 LOG_FILE = "mySpider.log"
 LOG_STDOUT = True
+LOG_LEVEL = "INFO"
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://doc.scrapy.org/en/latest/topics/autothrottle.html
