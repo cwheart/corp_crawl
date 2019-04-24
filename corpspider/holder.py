@@ -14,4 +14,4 @@ class Holder(Document):
     corp_id = StringField(required=True)
     corp_no = StringField(required=True)
     hoder_count = StringField(required=False)
-    items = ListField(EmbeddedDocumentField(HolderItem))
+    items = EmbeddedDocumentListField(HolderItem)

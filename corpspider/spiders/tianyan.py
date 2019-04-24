@@ -6,6 +6,7 @@ from ..mongo import db
 from ..items import CorpspiderItem
 import random
 from ..holder import Holder, HolderItem
+from ..corp_info import CorpInfo, InfoItem
 
 class ChachaSpider(scrapy.Spider):
     name = 'tianyan'
@@ -89,7 +90,30 @@ class ChachaSpider(scrapy.Spider):
             set__corp_no=no,
             set__hoder_count=hoder_count
         )
-        print hoder_count
-        # holder.save()
 
+        info = CorpInfo.objects(corp_id=corp_id)
+        lines = response.xpath('//div[@class="item-container"]')
+        info_items = []
+        for line in lines:
+            title = line.xpath('.//a/text()').extract_first()
+            count = line.xpath('.//a/span[@class="item-count"]/text()').extract_first()
+            if not count:
+                count = '0'
+                
+            info_item = InfoItem(cate=title, name=title, count=count)
+            info_items.append(info_item)
 
+            nodes = line.css('div.item')
+            for node in nodes:
+                name = node.xpath('.//text()').extract_first()
+                count = node.xpath('.//span/text()').extract_first()
+                if not count:
+                    count = '0'
+                info_item = InfoItem(cate=title, name=name, count=count)
+                info_items.append(info_item)
+        info.modify(
+            upsert=True,
+            new=True,
+            set__items=info_items,
+            set__corp_no=no
+        )
