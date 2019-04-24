@@ -65,6 +65,7 @@ DOWNLOADER_MIDDLEWARES = {
 }
 
 USER_AGENT_LIST = "useragents.txt"
+REDIRECT_ENABLED = False
 
 # Enable or disable extensions
 # See https://doc.scrapy.org/en/latest/topics/extensions.html

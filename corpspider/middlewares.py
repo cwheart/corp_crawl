@@ -8,6 +8,7 @@
 from scrapy import signals
 import base64
 import requests
+from datetime import datetime, timedelta
 
 class CorpspiderSpiderMiddleware(object):
     # Not all methods need to be defined. If a method is not defined,
@@ -107,6 +108,6 @@ class ProxyMiddleware(object):
     # overwrite process request
     def process_request(self, request, spider):
         # Set the location of the proxy
-        url = requests.get('http://dps.kdlapi.com/api/getdps/?orderid=995609298222197&num=1&pt=1&sep=1').text
-        request.meta['proxy'] = "http://" + url
+        url = '182.240.245.199:15326'
+        request.meta['proxy'] = "https://" + url
         pass
