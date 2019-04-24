@@ -20,14 +20,22 @@ class ChachaSpider(scrapy.Spider):
             for item in db['corps'].find({ 'email': None }).skip(self.skip).limit(10):
                 self.items.append(item)
             self.skip += 10
-        return self.items.pop()
+        if len(self.items) > 0:
+            return self.items.pop()
+        else if skip == 0:
+            self.skip = 0
+            return None
+        else
+            return get_item()
 
     def start_requests(self):
-        while item = get_item():
+        item = get_item()
+        while item:
             yield self.request_page(item)
             rd = random.randint(3, 20)
             print 'sleep.... %s' % rd
             time.sleep(rd)
+            item = get_item()
     def request_page(self, corp):
         url = 'https://www.qichacha.com/search?key=' + corp['no']
         return scrapy.Request(
