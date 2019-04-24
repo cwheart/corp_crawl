@@ -60,7 +60,10 @@ DEFAULT_REQUEST_HEADERS = {
 # See https://doc.scrapy.org/en/latest/topics/downloader-middleware.html
 DOWNLOADER_MIDDLEWARES = {
     'scrapy.contrib.downloadermiddleware.useragent.UserAgentMiddleware': None,
-    'random_useragent.RandomUserAgentMiddleware': 400
+    'random_useragent.RandomUserAgentMiddleware': 400,
+    'scrapy.downloadermiddlewares.retry.RetryMiddleware': 90,
+    'scrapy_proxies.RandomProxy': 100,
+    'scrapy.downloadermiddlewares.httpproxy.HttpProxyMiddleware': 110,
 }
 
 USER_AGENT_LIST = "useragents.txt"
@@ -83,6 +86,8 @@ MONGO_DB = "corps"
 LOG_FILE = "mySpider.log"
 LOG_STDOUT = True
 # LOG_LEVEL = "INFO"
+
+PROXY_LIST = '/data/config.proxy'
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://doc.scrapy.org/en/latest/topics/autothrottle.html

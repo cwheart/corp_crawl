@@ -2,3 +2,5 @@ scrapy
 pymongo
 scrapy-random-useragent
 mongoengine
+scrapy_proxies
+
