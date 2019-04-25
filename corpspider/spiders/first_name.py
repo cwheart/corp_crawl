@@ -29,8 +29,8 @@ class FirstNameSpider(scrapy.Spider):
         yield self.request_page('1', 0, 0)
 
     def request_page(self, page, i, j):
-        area = self.areas[i]
-        code = self.codes[i]
+        area = self.areas[i][0]
+        code = self.areas[i][1]
         name = self.names[j]
         apt_scope = self.apt_scopes[0]
         apt_code = self.apt_codes[0]
