@@ -10,48 +10,94 @@ from ..corp import Corp
 class FirstNameSpider(scrapy.Spider):
     name = 'first_name'
     url = 'http://jzsc.mohurd.gov.cn/dataservice/query/comp/list'
+    i = 0
+    j = 0
+    lines = open("/data/xc.csv", "r").readlines()
+    names = ' '.join(lines).split(' ')
+
     apt_scopes = [
         ['D101A', '建筑工程施工总承包一级'],
-        ['D101T', '建筑工程施工总承包特级'],
-        ['D110A', '市政公用工程施工总承包一级'],
-        ['D110T', '市政公用工程施工总承包特级']
     ]
     areas = [
-        ['110000', '北京市'],
-        ['120000', '天津市'],
-        ['130000', '河北省'],
-        ['140000', '山西省'],
-        ['150000', '内蒙古自治区'],
-        ['210000', '辽宁省'],
-        ['220000', '吉林省'],
-        ['230000', '黑龙江省'],
-        ['310000', '上海市'],
         ['320000', '江苏省'],
         ['330000', '浙江省'],
-        ['340000', '安徽省'],
-        ['350000', '福建省'],
-        ['360000', '江西省'],
-        ['370000', '山东省'],
-        ['410000', '河南省'],
         ['420000', '湖北省'],
-        ['430000', '湖南省'],
-        ['440000', '广东省'],
-        ['450000', '广西壮族自治区'],
-        ['460000', '海南省'],
-        ['500000', '重庆市'],
         ['510000', '四川省'],
-        ['520000', '贵州省'],
-        ['530000', '云南省'],
-        ['540000', '西藏自治区'],
-        ['610000', '陕西省'],
-        ['620000', '甘肃省'],
-        ['630000', '青海省'],
-        ['640000', '宁夏回族自治区'],
-        ['650000', '新疆维吾尔自治区']
     ]
 
     def start_requests(self):
-        for area in areas:
-            for scope in apt_scopes:
-                yield self.request_page('1', area, scope)
+        yield self.request_page('1', 0, 0)
 
+    def request_page(self, page, i, j):
+        area = self.areas[i]
+        code = self.codes[i]
+        name = self.names[j]
+        apt_scope = self.apt_scopes[0]
+        apt_code = self.apt_codes[0]
+        print "area: " + code + " name: " + name + " page: " + page
+
+        request = scrapy.FormRequest(
+            url = self.url,
+            formdata={
+                "apt_code": apt_code,
+                "apt_scope": apt_scope,
+                "qy_reg_addr": area,
+                "qy_fr_name": name,
+                "qy_region": code,
+                "$reload": "0",
+                "$total": self.total,
+                "$pgsz": "15",
+                "$pg": page
+            },
+            callback=self.parse,
+            meta={'i': i, 'j': j}
+        )
+        return request
+
+    def parse(self, response):
+        i = response.meta['i']
+        j = response.meta['j']
+        lines = response.xpath('//tbody[@class="cursorDefault"]/tr')
+        for line in lines:
+            path = line.xpath('.//td[@class="text-left primary"]/a/@href').extract_first()
+            url = response.urljoin(path)
+            if url == 'http://jzsc.mohurd.gov.cn/dataservice/query/comp/list':
+                print "blank...."
+                print i
+                print j
+                continue
+            no = line.xpath('.//td[@class="text-left complist-num"]/text()').extract_first()
+            corp_name = line.xpath('.//td[@class="text-left primary"]/a/text()').extract_first()
+            if not no:
+                no = ''
+            if not corp_name:
+                print 'corp name blank.. ' + url
+                continue
+            no = no.strip()
+            corp_name = corp_name.strip()
+            corps = Corp.objects(no=no, name=corp_name)
+            if len(corps) > 0:
+                corp = corps[0]
+            else:
+                print 'new corp.. ' + url
+                corp = Corp(no=no, name=corp_name)
+            corp['link'] = url
+            corp['d101a']=True
+            corp.save()
+        page_text = response.css('a[sf=pagebar]').attrib['sf:data']
+        pg = re.findall(r'\(\{pg\:(\d+)', page_text)[0]
+        pc = re.findall(r'pc\:(\d+)', page_text)[0]
+        self.total = re.findall(r'tt\:(\d+)', page_text)[0]
+        pg = int(pg) + 1
+        pc = int(pc)
+        print page_text
+        if pg > pc or pg > 30:
+            j += 1
+            pg = 1
+            self.total = ""
+        if j >= len(self.names):
+            i += 1
+            j = 0
+        print "current" + " i: %s" % i + " j: %s" % j
+        time.sleep(4)
+        yield self.request_page("%s" % pg, i, j)
