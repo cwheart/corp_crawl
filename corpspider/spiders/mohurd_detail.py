@@ -50,7 +50,7 @@ class MohurdDetailSpider(scrapy.Spider):
         return scrapy.Request(
             url,
             callback=self.pase_qualification,
-            meta={ 'no': corp['no'], 'name': corp['name'], '_id': corp['_id'], 'link': url }
+            meta={ 'no': corp['no'], 'name': corp['name'], '_id': corp['_id'], 'link': corp['link'] }
         )
 
     def parse(self, response):
