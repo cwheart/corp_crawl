@@ -89,9 +89,9 @@ class MohurdDetailSpider(scrapy.Spider):
             item['published_org'] = published_org
             old = db['qualifications'].find_one({ "no": item['no'], "name": item["name"] })
             if old:
-              self.db['qualifications'].update_one({'_id': old['_id'] }, {'$set': dict(item)})
+              db['qualifications'].update_one({'_id': old['_id'] }, {'$set': dict(item)})
             else:
-              self.db['qualifications'].insert(dict(item))
+              db['qualifications'].insert(dict(item))
 
 
 
