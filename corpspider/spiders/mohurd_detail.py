@@ -56,13 +56,13 @@ class MohurdDetailSpider(scrapy.Spider):
     def parse(self, response):
         print "parse......"
         link = response.meta['link']
-        items = response.xpath('//table[@class="pro_table_box datas_table"]/tbody/tr/td/text()').extract()
+        tds = response.xpath('//table[@class="pro_table_box datas_table"]/tbody/tr/td')
         item = {}
-        item['no'] = items[0].strip().split('/')[-1].strip()
-        item['legal_person'] = items[1].strip()
-        item['corp_type'] = items[2].strip()
-        item['area'] = items[3].strip()
-        item['address'] = items[4].strip()
+        item['no'] = tds[0].xpath('.//text()').extract_first().strip().split('/')[-1].strip()
+        item['legal_person'] = tds[1].xpath('.//text()').extract_first()
+        item['corp_type'] = tds[2].xpath('.//text()').extract_first()
+        item['area'] = tds[3].xpath('.//text()').extract_first()
+        item['address'] = tds[4].xpath('.//text()').extract_first()
         db['corps'].update({ 'link': link }, {'$set': dict(item) })
 
     def pase_qualification(self, response):
