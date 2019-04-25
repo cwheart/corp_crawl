@@ -126,16 +126,25 @@ class MohurdSpider(scrapy.Spider):
         for line in lines:
             path = line.xpath('.//td[@class="text-left primary"]/a/@href').extract_first()
             url = response.urljoin(path)
+            if url == 'http://jzsc.mohurd.gov.cn/dataservice/query/comp/list':
+                print "blank...."
+                print i
+                print j
+                continue
             no = line.xpath('.//td[@class="text-left complist-num"]/text()').extract_first()
             corp_name = line.xpath('.//td[@class="text-left primary"]/a/text()').extract_first()
             if not no:
                 no = ''
+            if not corp_name:
+                print 'corp name blank.. ' + url
+                continue
             no = no.strip()
             corp_name = corp_name.strip()
             corps = Corp.objects(no=no, name=corp_name)
             if len(corps) > 0:
                 corp = corps[0]
             else:
+                print 'new corp.. ' + url
                 corp = Corp(no=no, name=corp_name)
             corp['link'] = url
             if j == 0:
