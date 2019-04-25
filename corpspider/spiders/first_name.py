@@ -6,12 +6,18 @@ from ..items import CorpspiderItem
 from ..items import QualificationItem
 from ..mongo import db
 from ..corp import Corp
+import sys
+
+reload(sys)
+
+sys.setdefaultencoding('utf8')
 
 class FirstNameSpider(scrapy.Spider):
     name = 'first_name'
     url = 'http://jzsc.mohurd.gov.cn/dataservice/query/comp/list'
     i = 0
     j = 0
+    total = ''
     lines = open("/data/xc.csv", "r").readlines()
     names = ' '.join(lines).split(' ')
 
@@ -77,6 +83,7 @@ class FirstNameSpider(scrapy.Spider):
             corp_name = corp_name.strip()
             corps = Corp.objects(no=no, name=corp_name)
             if len(corps) > 0:
+                print 'update corp..' + url
                 corp = corps[0]
             else:
                 print 'new corp.. ' + url
