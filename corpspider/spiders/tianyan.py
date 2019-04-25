@@ -46,8 +46,7 @@ class ChachaSpider(scrapy.Spider):
             url,
             callback=self.parse_list,
             dont_filter=True,
-            meta={ 'no': corp['no'], 'name': corp['name'], '_id': corp['_id'] },
-            headers={'Referer': 'https://www.baidu.com/'}
+            meta={ 'no': corp['no'], 'name': corp['name'], '_id': corp['_id'] }
         )
     def parse_list(self, response):
         no = response.meta['no']
@@ -65,7 +64,6 @@ class ChachaSpider(scrapy.Spider):
             url,
             callback=self.parse,
             meta={ 'no': no, '_id': corp_id },
-            headers={'Referer': 'https://www.baidu.com/'}
         )
 
     def parse(self, response):
@@ -100,6 +98,8 @@ class ChachaSpider(scrapy.Spider):
         )
         if len(items) > 0:
             db['corps'].update_one({'_id': corp_id }, {'$set': dict({'holder': True})})
+        else:
+            print response.body
 
         info = CorpInfo.objects(corp_id=corp_id)
         lines = response.xpath('//div[@class="item-container"]')

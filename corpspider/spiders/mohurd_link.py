@@ -132,6 +132,7 @@ class MohurdSpider(scrapy.Spider):
                 no = no.strip()
                 if no == '':
                     continue
+                corp_name = corp_name.strip()
             else:
                 continue
             corps = Corp.objects(no=no, name=corp_name)

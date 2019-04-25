@@ -61,7 +61,7 @@ DEFAULT_REQUEST_HEADERS = {
 DOWNLOADER_MIDDLEWARES = {
     'scrapy.contrib.downloadermiddleware.useragent.UserAgentMiddleware': None,
     'random_useragent.RandomUserAgentMiddleware': 400,
-    'corpspider.middlewares.ProxyMiddleware': 100,
+    # 'corpspider.middlewares.ProxyMiddleware': 100,
 }
 
 USER_AGENT_LIST = "useragents.txt"
