@@ -128,13 +128,10 @@ class MohurdSpider(scrapy.Spider):
             url = response.urljoin(path)
             no = line.xpath('.//td[@class="text-left complist-num"]/text()').extract_first()
             corp_name = line.xpath('.//td[@class="text-left primary"]/a/text()').extract_first()
-            if no:
-                no = no.strip()
-                if no == '':
-                    continue
-                corp_name = corp_name.strip()
-            else:
-                continue
+            if not no:
+                no = ''
+            no = no.strip()
+            corp_name = corp_name.strip()
             corps = Corp.objects(no=no, name=corp_name)
             if len(corps) > 0:
                 corp = corps[0]
