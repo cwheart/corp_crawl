@@ -4,7 +4,7 @@ from corpspider.qualification import Qualification
 
 for qualification in Qualification.objects(name='建筑工程施工总承包一级'):
     for corp in Corp.objects(no=qualification['corp_no']):
-        print 'update' + corp['no']
+        print 'update.. ' + corp['no']
         corp['d101a'] = True
         corp.save()
 for qualification in Qualification.objects(name='建筑工程施工总承包特级'):

@@ -138,16 +138,18 @@ class MohurdSpider(scrapy.Spider):
             corps = Corp.objects(no=no, name=corp_name)
             if len(corps) > 0:
                 corp = corps[0]
-                corp['link'] = url
-                if j == 0:
-                    corp['d101a']=True
-                elif j == 1:
-                    corp['d101t']=True
-                elif j == 2:
-                    corp['d110a']=True
-                elif j == 3:
-                    corp['d110t']=True
-                corp.save()
+            else:
+                corp = Corp(no=no, name=corp_name)
+            corp['link'] = url
+            if j == 0:
+                corp['d101a']=True
+            elif j == 1:
+                corp['d101t']=True
+            elif j == 2:
+                corp['d110a']=True
+            elif j == 3:
+                corp['d110t']=True
+            corp.save()
         page_text = response.css('a[sf=pagebar]').attrib['sf:data']
         pg = re.findall(r'\(\{pg\:(\d+)', page_text)[0]
         pc = re.findall(r'pc\:(\d+)', page_text)[0]
