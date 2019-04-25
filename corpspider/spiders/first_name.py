@@ -32,8 +32,8 @@ class FirstNameSpider(scrapy.Spider):
         area = self.areas[i][0]
         code = self.areas[i][1]
         name = self.names[j]
-        apt_scope = self.apt_scopes[0]
-        apt_code = self.apt_codes[0]
+        apt_scope = self.apt_scopes[0][0]
+        apt_code = self.apt_scopes[0][1]
         print "area: " + code + " name: " + name + " page: " + page
 
         request = scrapy.FormRequest(
