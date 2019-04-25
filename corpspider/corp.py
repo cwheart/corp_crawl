@@ -2,6 +2,8 @@ from mongoengine import *
 connect('corps')
 
 class Corp(Document):
+    meta = {'collection': 'corps'}
+
     no = StringField(required=True)
     name = StringField(required=False)
     legal_person = StringField(required=False)
@@ -12,5 +14,6 @@ class Corp(Document):
     link = StringField(required=False)
     d101a = BooleanField(default=False)
     d101t = BooleanField(default=False)
-    d101a = BooleanField(default=False)
+    d110a = BooleanField(default=False)
     d110t = BooleanField(default=False)
+
