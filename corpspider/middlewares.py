@@ -109,14 +109,7 @@ class CorpspiderDownloaderMiddleware(object):
 class ProxyMiddleware(object):
     # overwrite process request
     def process_request(self, request, spider):
-        url = 'http://dps.kdlapi.com/api/getdps/?orderid=995609298222197&num=1&pt=1&sep=1'
-        # Set the location of the proxy
         timeago = datetime.now() - timedelta(minutes=30)
-        count = Agent.objects(created_at__gt=timeago).count()
-        while count < 30:
-            count += 1
-            agent = Agent(host=requests.get(url).text)
-            agent.save()
         agents = Agent.objects(created_at__gt=timeago)
         if len(agents) > 0:
             agent = agents[random.randint(0, len(agents) - 1)]

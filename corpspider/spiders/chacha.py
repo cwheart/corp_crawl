@@ -22,7 +22,7 @@ class ChachaSpider(scrapy.Spider):
             self.skip += 10
         if len(self.items) > 0:
             return self.items.pop()
-        elif skip == 0:
+        elif self.skip == 0:
             return None
         else:
             self.skip = 0
