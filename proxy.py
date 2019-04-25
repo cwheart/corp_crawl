@@ -8,7 +8,7 @@ while True:
     url = 'http://dps.kdlapi.com/api/getdps/?orderid=995609298222197&num=1&pt=1&sep=1'
     count = 3
     for i in range(0, count):
-        agent = Agent(host=requests.get(url).text)
+        agent = Agent(host=requests.get(url).text, created_at=datetime.now())
         agent.save()
     print "sleep...."
     print datetime.now()
