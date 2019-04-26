@@ -7,6 +7,8 @@ from ..items import QualificationItem
 from ..mongo import db
 from ..corp import Corp
 import sys
+from urllib import quote, urlencode
+from urllib import urlencode
 
 reload(sys)
 
@@ -35,12 +37,12 @@ class FirstNameSpider(scrapy.Spider):
         yield self.request_page('1', 0, 0)
 
     def request_page(self, page, i, j):
-        area = self.areas[i][0]
-        code = self.areas[i][1]
+        code = self.areas[i][0]
+        area = self.areas[i][1]
         name = self.names[j]
-        apt_scope = self.apt_scopes[0][0]
-        apt_code = self.apt_scopes[0][1]
-        print "area: " + code + " name: " + name + " page: " + page
+        apt_code = self.apt_scopes[0][0]
+        apt_scope = self.apt_scopes[0][1]
+        print "area: " + code + " name: " + name + " page: " + page + " scope: " + apt_code
 
         request = scrapy.FormRequest(
             url = self.url,
@@ -56,6 +58,7 @@ class FirstNameSpider(scrapy.Spider):
                 "$pg": page
             },
             callback=self.parse,
+            headers={'Content-Type': 'application/x-www-form-urlencoded'},
             meta={'i': i, 'j': j}
         )
         return request
