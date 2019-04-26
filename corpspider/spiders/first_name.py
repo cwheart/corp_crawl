@@ -21,13 +21,13 @@ class FirstNameSpider(scrapy.Spider):
     j = 0
     total = ''
     lines = open("/data/xc.csv", "r").readlines()
-    names = ' '.join(lines).split(' ')
+    names = set(' '.join(lines).split(' '))
 
     apt_scopes = [
         ['D101A', '建筑工程施工总承包一级'],
     ]
     areas = [
-        ['320000', '江苏省'],
+        # ['320000', '江苏省'],
         ['330000', '浙江省'],
         ['420000', '湖北省'],
         ['510000', '四川省'],
