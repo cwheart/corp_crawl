@@ -21,4 +21,4 @@ class Corp(Document):
     d101t = BooleanField(default=False)
     d110a = BooleanField(default=False)
     d110t = BooleanField(default=False)
-
+    deleted_at = DateTimeField()
