@@ -21,7 +21,7 @@ class FirstNameSpider(scrapy.Spider):
     j = 0
     total = ''
     lines = open("/data/xc.csv", "r").readlines()
-    names = set(' '.join(lines).split(' '))
+    names = list(set(' '.join(lines).split(' ')))
 
     apt_scopes = [
         ['D101A', '建筑工程施工总承包一级'],
