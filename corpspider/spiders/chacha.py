@@ -5,6 +5,9 @@ import re
 from ..mongo import db
 from ..items import CorpspiderItem
 import random
+import sys
+
+reload(sys)
 
 class ChachaSpider(scrapy.Spider):
     name = 'chacha'
@@ -66,6 +69,8 @@ class ChachaSpider(scrapy.Spider):
                 item['email'] = re.findall(u'邮箱：(.*)', title)[0]
             else:
                 print 'not found' + title
+        if not item['email']:
+            print response.body
         item['no'] = response.meta['no']
         print(dict(item))
         db['corps'].update_one({'_id': corp_id }, {'$set': dict(item)})
