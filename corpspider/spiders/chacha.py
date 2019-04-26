@@ -64,12 +64,14 @@ class ChachaSpider(scrapy.Spider):
             else:
                 print 'not found' + title
         titles = response.xpath('//p[@class="m-t-xs"]/text()').extract()
+        email = None
         for title in titles:
             if(title.find(u'邮箱：') >= 0):
-                item['email'] = re.findall(u'邮箱：(.*)', title)[0]
+                email = re.findall(u'邮箱：(.*)', title)[0]
+                item['email'] = email
             else:
                 print 'not found' + title
-        if not item['email']:
+        if not email:
             print response.body
         item['no'] = response.meta['no']
         print(dict(item))
